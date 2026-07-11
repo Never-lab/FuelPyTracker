@@ -95,7 +95,8 @@ def render():
             new_data = forms.render_refueling_inputs(
                 def_date, def_km, def_price, def_cost, True, "", 
                 min_p, max_p, settings.max_total_cost,
-                last_km_known=last_km # Passiamo il dato per il tooltip
+                last_km_known=last_km, # Passiamo il dato per il tooltip
+                key_suffix="add"
             )
             
             if st.form_submit_button("Salva", type="primary", width="stretch", disabled=is_demo_mode(), help="Salvataggio disabilitato in modalità Demo" if is_demo_mode() else None):
@@ -114,8 +115,12 @@ def render():
                             
                             st.success(f"✅ Salvato! ({liters:.2f} L)")
                             
-                            # PULIZIA: Reset della bozza OCR dopo salvataggio
+                            # PULIZIA: Reset della bozza OCR dopo salvataggio e pulizia dello stato slider
                             st.session_state.ocr_draft = {}
+                            if "price_slider_add" in st.session_state:
+                                del st.session_state["price_slider_add"]
+                            if "last_default_price_add" in st.session_state:
+                                del st.session_state["last_default_price_add"]
                             
                             st.rerun()
                         except Exception as e:
@@ -338,7 +343,8 @@ def _handle_edit_flow(db, user_id, rec, settings):
             rec.is_full_tank, rec.notes, 
             min_pe, max_pe, 
             safe_max_cost,
-            last_km_known=rec.total_km 
+            last_km_known=rec.total_km,
+            key_suffix="edit"
         )
         
         if st.form_submit_button("Aggiorna", type="primary", width="stretch", disabled=is_demo_mode()):
@@ -354,10 +360,19 @@ def _handle_edit_flow(db, user_id, rec, settings):
             crud.update_refueling(db, user_id, rec.id, changes)
             st.success("Record aggiornato!")
             st.session_state.active_operation = None
+            if "price_slider_edit" in st.session_state:
+                del st.session_state["price_slider_edit"]
+            if "last_default_price_edit" in st.session_state:
+                del st.session_state["last_default_price_edit"]
             st.rerun()
             
     if st.button("Annulla", width="stretch"):
-        st.session_state.active_operation = None; st.rerun()
+        st.session_state.active_operation = None
+        if "price_slider_edit" in st.session_state:
+            del st.session_state["price_slider_edit"]
+        if "last_default_price_edit" in st.session_state:
+            del st.session_state["last_default_price_edit"]
+        st.rerun()
 
 def _handle_delete_flow(db, user_id, record_id):
     st.error("Sei sicuro di voler eliminare definitivamente questo record?")

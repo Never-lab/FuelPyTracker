@@ -147,6 +147,25 @@ def apply_custom_css():
             .sidebar-user-name { font-weight: bold; font-size: 0.95rem; color: white; }
             .sidebar-user-role { font-size: 0.75rem; color: #aaa; }
             .stApp { background-color: #0e1117; }
+            
+            /* --- RIFORNIMENTI: FORZATURA RIGA PREZZO --- */
+            div[data-testid="element-container"]:has(.mobile-inline-price) + div[data-testid="element-container"] > div[data-testid="stHorizontalBlock"] {
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+            }
+            div[data-testid="element-container"]:has(.mobile-inline-price) + div[data-testid="element-container"] > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+                width: 15% !important;
+                min-width: 15% !important;
+            }
+            div[data-testid="element-container"]:has(.mobile-inline-price) + div[data-testid="element-container"] > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+                width: 70% !important;
+                min-width: 70% !important;
+            }
+            div[data-testid="element-container"]:has(.mobile-inline-price) + div[data-testid="element-container"] > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
+                width: 15% !important;
+                min-width: 15% !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
