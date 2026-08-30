@@ -7,7 +7,7 @@ from src.services.data.exporters import reports, templates
 # Importiamo i nuovi moduli refattorizzati
 from src.services.data.importers import manager
 from src.ui.components.settings import export_dialog, data_staging
-from src.demo import is_demo_mode
+from src.demo import writes_disabled
 
 @st.fragment
 def render():
@@ -111,7 +111,7 @@ def _render_category_editor(session_key: str, editing_key: str, add_placeholder:
         "Nuova Categoria", placeholder=add_placeholder,
         label_visibility="collapsed", key=f"{session_key}_new_input"
     )
-    if c_add_btn.form_submit_button("➕", key=f"{session_key}_add_btn", help="Aggiungi", type="secondary", width='stretch', disabled=is_demo_mode()):
+    if c_add_btn.form_submit_button("➕", key=f"{session_key}_add_btn", help="Aggiungi", type="secondary", width='stretch', disabled=writes_disabled()):
         if new_label_input:
             clean_val = new_label_input.strip()
             if clean_val not in st.session_state[session_key]:
@@ -147,7 +147,7 @@ def _render_category_editor(session_key: str, editing_key: str, add_placeholder:
                 b1, b2 = st.columns(2)
 
                 if is_editing:
-                    if b1.form_submit_button("✅", key=f"s_{session_key}_{i}", width='stretch', disabled=is_demo_mode()):
+                    if b1.form_submit_button("✅", key=f"s_{session_key}_{i}", width='stretch', disabled=writes_disabled()):
                         if edit_val:
                             st.session_state[session_key][i] = edit_val.strip()
                             st.session_state[editing_key] = -1
@@ -156,10 +156,10 @@ def _render_category_editor(session_key: str, editing_key: str, add_placeholder:
                         st.session_state[editing_key] = -1
                         st.rerun()
                 else:
-                    if b1.form_submit_button("✏️", key=f"e_{session_key}_{i}", help="Modifica", width='stretch', disabled=is_demo_mode()):
+                    if b1.form_submit_button("✏️", key=f"e_{session_key}_{i}", help="Modifica", width='stretch', disabled=writes_disabled()):
                         st.session_state[editing_key] = i
                         st.rerun()
-                    if b2.form_submit_button("❌", key=f"d_{session_key}_{i}", help="Elimina", width='stretch', disabled=is_demo_mode()):
+                    if b2.form_submit_button("❌", key=f"d_{session_key}_{i}", help="Elimina", width='stretch', disabled=writes_disabled()):
                         show_delete_dialog(i, label, session_key, editing_key)
 
 def _render_config_tab(user):
@@ -306,7 +306,7 @@ def _render_config_tab(user):
         st.write("")
         
         # --- SALVATAGGIO FINALE ---
-        if is_demo_mode():
+        if writes_disabled():
             st.warning("🔒 Modalità Demo: Modifiche disabilitate per sicurezza.")
         elif st.form_submit_button("💾 Salva Configurazioni", type="primary", width='stretch'):
             crud.update_settings(
@@ -366,7 +366,7 @@ def _render_import_tab(user):
         )
 
     # --- GESTIONE RESET UPLOADER ---
-    if is_demo_mode():
+    if writes_disabled():
         st.warning("🔒 Modalità Demo: Modifiche disabilitate per sicurezza.")
         return
 
