@@ -3,7 +3,7 @@ from src.database.core import get_db
 from src.services.data.exporters import templates
 from src.services.data.importers import manager
 from . import data_staging
-from src.demo import is_demo_mode
+from src.demo import writes_disabled
 
 
 def render(user):
@@ -41,7 +41,7 @@ def render(user):
         )
 
     # --- GESTIONE RESET UPLOADER ---
-    if is_demo_mode():
+    if writes_disabled():
         st.warning("🔒 Modalità Demo: Modifiche disabilitate per sicurezza.")
         return
 
