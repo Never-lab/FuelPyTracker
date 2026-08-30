@@ -59,7 +59,12 @@ Il rischio con i monoliti è l'accoppiamento: codice UI che chiama direttamente 
 ```
 src/
 ├── ui/               # Layer di Presentazione — solo chiamate st.xyz
-│   └── components/   # Un modulo per pagina (dashboard, fuel, maintenance, ...)
+│   └── components/   # Una cartella per pagina; file `*.py` orchestratore + sotto-moduli
+│       ├── dashboard/
+│       ├── fuel/           # fuel.py (orchestrator) + add_panel, history_tab, manage_tab, ocr_dialog, …
+│       ├── maintenance/    # maintenance.py + tabs, add_form, reminders_ui, …
+│       ├── settings/       # settings.py (orchestrator) + config_tab, export_tab, import_tab, pdf_tab, …
+│       └── profile/
 │
 ├── services/         # Layer di Business Logic — Python puro, indipendente dal framework
 │   ├── business/     # Calcoli di dominio (consumo, health score, previsioni)
@@ -72,7 +77,8 @@ src/
 ├── database/         # Layer di Accesso ai Dati — modelli SQLAlchemy e operazioni CRUD
 │   ├── models.py     # Definizioni entità ORM
 │   ├── crud.py       # Tutte le operazioni di lettura/scrittura sul DB
-│   └── core.py       # Engine, SessionLocal, init_db()
+│   ├── core.py       # Engine, SessionLocal, init_db()
+│   └── url.py        # Risoluzione DATABASE_URL (LOCAL_SQLITE vs secrets)
 │
 ├── auth/             # Layer di Sessione — gestione del ciclo di vita dei token
 │   ├── session_handler.py   # Strategia di persistenza token via URL param
@@ -81,6 +87,7 @@ src/
 └── config.py         # Loader centralizzato per la configurazione TOML
 ```
 
+Le pagine pesanti (`settings`, `fuel`, `maintenance`) non vivono in un unico file monolitico: un modulo `render()` orchestratore apre tab/expander e delega ai sotto-moduli della stessa cartella. Move-only: stessa UX, confini più chiari per review e test.
 ### La Separazione tra i Layer
 
 Il principio guida è semplice: il codice della UI (`src/ui/`) non parla mai direttamente con il database, e il database non sa nulla di Streamlit. Ogni layer comunica solo con quello adiacente, tramite oggetti Python standard (dizionari, dataclass, liste).
